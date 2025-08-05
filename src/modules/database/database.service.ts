@@ -1,24 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { Connection } from 'typeorm';
-/*
-2. Using EntityManager (for more control or when not tied to a specific entity):
-Inject the Connection object from TypeORM into your service or controller.
-Create a QueryRunner from the Connection.
-Execute the stored procedure using queryRunner.query().
-Remember to release the QueryRunner after use to free up the database connection.
-*/
-@Injectable()
-export class DataService {
-  constructor(private readonly connection: Connection) {}
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DatabaseEntity } from "@db/database.entity";
+import { log } from 'console';
 
-  async callStoredProcedureWithEntityManager(param1: string): Promise<any> {
-    const queryRunner = this.connection.createQueryRunner();
-    try {
-      // Assuming 'my_stored_procedure' takes one parameter
-      const result = await queryRunner.query('exec my_stored_procedure(?)', [param1]);
-      return result;
-    } finally {
-      await queryRunner.release();
-    }
+@Injectable()
+export class DatabaseService {
+  constructor(@InjectRepository(DatabaseEntity) private readonly dbRepo:Repository<DatabaseEntity>) {}
+
+  async callStoredProcedureWithRepo(param1: string, param2:boolean=true): Promise<any> {
+    let idNumber = parseInt(param1);
+    if(Number.isNaN(idNumber)) idNumber=-1;
+    log('🔨 >> DatabaseService >> callStoredProcedureWithRepo >> idNumber >>', idNumber);
+
+    let directChild = param2 === true ? 1 : 0;
+    log('DatabaseService >> callStoredProcedureWithRepo >> directChild >>', directChild);
+
+    let sql = `exec sp_Categories_Load @CategoryId=${idNumber}, @DirectChild=${directChild}, @Lang='E'`;
+    log('😼 >> DatabaseService >> callStoredProcedureWithRepo >> sql >>', sql);
+
+    let r = await this.dbRepo.query(sql);
+    log('🚚 >> DatabaseService >> callStoredProcedureWithRepo >> r >>', r);
+
+    return r;
   }
 }

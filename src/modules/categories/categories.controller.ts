@@ -2,21 +2,26 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { log } from 'node:console';
+import { DatabaseService } from '@db/database.service';
 
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly catService: CategoriesService) {}
+  constructor(
+    private readonly catService: CategoriesService,
+    private readonly dbService: DatabaseService,
+  ) {}
 
-  @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.catService.create(createCategoryDto);
-  }
+  // @Post()
+  // create(@Body() createCategoryDto: CreateCategoryDto) {
+  //   return this.catService.create(createCategoryDto);
+  // }
 
   @Get()
   findAll() {
+    // return this.catService.findAll();
+    // return this.dbService.callStoredProcedureWithRepo('0', true);
     return this.catService.findAll();
-  }
+  }  
 
   @Get(':id')
   fetchCategory(@Param('id') id:string){

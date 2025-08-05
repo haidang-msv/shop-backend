@@ -13,10 +13,12 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    // "rootDirs": [
-    //   "src"
-    // ],
+    "baseUrl": "./src", // alias for 'src' directory => Using an alias: import Button from '@/button';
+    "paths": {
+      "@modules/*": ["modules/*"], // alias for the 'modules' directory
+      "@db/*": ["modules/database/*"], // alias for the 'database' directory
+      "@uti/*": ["modules/utilities/*"], // alias for the 'utilities' directory
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
