@@ -1,7 +1,8 @@
 import { Entity, Unique, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class RestaurantsEntity {
+// [class name] must be like [table name] in db
+export class Restaurants {
   @PrimaryGeneratedColumn()
   Id: number;
 

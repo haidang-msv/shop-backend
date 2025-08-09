@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class CategoriesEntity {
+// [class name] must be like [table name] in db
+export class Categories {
   @PrimaryGeneratedColumn()
   Id: number;
 

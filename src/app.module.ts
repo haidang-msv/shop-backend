@@ -1,37 +1,130 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import appConfig from "./config/app.config";
+import dbConfig from "./config/db.config";
+import { UtilitiesService, HashService } from '@modules/utilities/utilities.service';
 
-import { UsersModule } from './modules/users/users.module';
-import { UsersEntity } from './modules/users/users.entity';
-
-import { RestaurantsModule } from './modules/restaurants/restaurants.module';
-import { RestaurantsEntity } from './modules/restaurants/restaurants.entity';
-
-import { CategoriesModule } from './modules/categories/categories.module';
-import { CategoriesEntity } from "./modules/categories/categories.entity";
+import { UsersModule } from '@modules/users/users.module';
+import { Users } from '@modules/users/users.entity';
+import { RestaurantsModule } from '@modules/restaurants/restaurants.module';
+import { Restaurants } from '@modules/restaurants/restaurants.entity';
+import { CategoriesModule } from '@modules/categories/categories.module';
+import { Categories } from '@modules/categories/categories.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mssql',
-      host: 'THIN19\\SQL2016',
-      port: 1433,
-      username: 'sa',
-      password: 's@1234',
-      database: 'ShopData',
-      options: {
-        encrypt: false, // MSSQL-specific option
-      },
-      // synchronize: true, //use this with development enviroment
-      entities: [UsersEntity, RestaurantsEntity, CategoriesEntity],
+    ConfigModule.forRoot({
+      isGlobal: true,  // Makes config accessible throughout the application
+      load:[appConfig, dbConfig],
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule], // Import ConfigModule to make ConfigService available
+      inject: [ConfigService], // Inject ConfigService into the factory function
+      useFactory: (configService: ConfigService) => ({
+        name: 'mainDB', // Unique name
+        type: 'mssql',
+        // type: configService.get<string>('db.type'), // ?? => i dont know reason why
+        host: configService.get<string>('db.host'),
+        port: configService.get<number>('db.port'),
+        username: configService.get<string>('db.user'),
+        password: configService.get<string>('db.pass'),
+        database: configService.get<string>('db.name'),
+        options: {
+          // encrypt: false, // MSSQL-specific option
+          encrypt: configService.get<boolean>('db.options.encrypt'),
+        },
+        synchronize: false, // true: use this with development enviroment
+        entities: [Users, Restaurants, Categories]
+      }),
+    }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule], // Import ConfigModule to make ConfigService available
+    //   inject: [ConfigService], // Inject ConfigService into the factory function
+    //   useFactory: (configService: ConfigService) => ({
+    //     name: 'mainDB', // Unique name
+    //     type: 'mssql',
+    //     // type: configService.get<string>('DB_TYPE'), // ?? => i dont know reason why
+    //     host: configService.get<string>('DB_HOST','localhost'), // use "localhost" when "DB_HOST" is not defined
+    //     port: configService.get<number>('DB_PORT', 1433), // use 1433 when DB_HOST is not defined
+    //     username: configService.get<string>('DB_USER'),
+    //     password: configService.get<string>('DB_PASS'),
+    //     database: configService.get<string>('DB_NAME'),
+    //     options: {
+    //       encrypt: false, // MSSQL-specific option
+    //     },
+    //     synchronize: false, // true: use this with development enviroment
+    //     // entities: [UsersEntity, RestaurantsEntity, CategoriesEntity],
+    //     entities: [__dirname + '/*.entity{.ts,.js}'], // load all of entity file in [dirname] module without import Entity Class
+    //   }),
+    // }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule], // Import ConfigModule to make ConfigService available
+    //   inject: [ConfigService], // Inject ConfigService into the factory function
+    //   useFactory: (configService: ConfigService) => ({
+    //     name: 'mainDB', // Unique name
+    //     type: 'mssql',
+    //     host: 'THIN19\\SQL2016',
+    //     port: 1433,
+    //     username: 'sa',
+    //     password: 's@1234',
+    //     database: 'ShopData',
+    //     options: {
+    //       encrypt: false, // MSSQL-specific option
+    //     },
+    //     synchronize: false, // true: use this with development enviroment
+    //     // entities: [UsersEntity, RestaurantsEntity, CategoriesEntity],
+    //     entities: [__dirname + '/*.entity{.ts,.js}'], // load all of entity file in [dirname] module without import Entity Class
+    //   }),
+    // }),
+    // secondary db connection (if have)
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   name: 'secondaryDB', // Unique name
+    //   useFactory: async (configService: ConfigService) => {
+    //     return {
+    //       type: 'mssql',
+    //       host: configService.get<string>('SECONDARY_DB_HOST'),
+    //       port: configService.get<number>('SECONDARY_DB_PORT', 1433),
+    //       username: configService.get<string>('SECONDARY_DB_USER'),
+    //       password: configService.get<string>('SECONDARY_DB_PASS'),
+    //       database: configService.get<string>('SECONDARY_DB_NAME'),
+    //       options: {
+    //         encrypt: false, // MSSQL-specific option
+    //       },
+    //       entities: [AccessLogEntity],
+    //     };
+    //   },
+    // }),
     UsersModule,
     RestaurantsModule,
     CategoriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ConfigService, UtilitiesService, HashService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private readonly configService: ConfigService) {
+    // console.log('get environment variable from .env file:');
+    // console.log('Type >>', this.configService.get<string>('DB_TYPE'));
+    // console.log('Host >>', this.configService.get<string>('DB_HOST'));
+    // console.log('Port >>', this.configService.get<string>('DB_PORT'));
+    // console.log('Username >>', this.configService.get<string>('DB_USER'));
+    // console.log('Password >>', this.configService.get<string>('DB_PASS'));
+    // console.log('Database >>', this.configService.get<string>('DB_NAME'));
+    
+    // console.log('get environment variable from .config file:');
+    // console.log('Type >>', this.configService.get<string>('db.type'));
+    // console.log('Host >>', this.configService.get<string>('db.host'));
+    // console.log('Port >>', this.configService.get<number>('db.port'));
+    // console.log('User >>', this.configService.get<string>('db.user'));
+    // console.log('Pass >>', this.configService.get<string>('db.pass'));
+    // console.log('Name >>', this.configService.get<string>('db.name'));
+
+    // console.log('App port >>', this.configService.get<string>('app.port'));
+  }
+}

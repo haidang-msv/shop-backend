@@ -33,13 +33,13 @@ export class CategoriesController {
   //   return this.catService.findOne(+id);
   // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.catService.update(+id, updateCategoryDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+  //   return this.catService.update(+id, updateCategoryDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.catService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.catService.remove(+id);
+  // }
 }

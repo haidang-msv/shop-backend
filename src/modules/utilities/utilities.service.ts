@@ -1,13 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { log } from "console";
+import { ConfigService } from "@nestjs/config";
 import crypto from 'crypto'; // for HashService
 import xmlConverter from "xml-js"; // https://www.npmjs.com/package/xml-js
 
 
 @Injectable()
 export class UtilitiesService{
+    constructor(
+        private readonly config:ConfigService
+    ){};
+
     xmlToJson(xmlString:string, compact:boolean=true):object{
-        // log('UtiService >> compact >>',compact);
+        // console.log('UtiService >> compact >>',compact);
         let options = {compact: compact, spaces: 4};
 
         // Convert XML to JSON object
@@ -17,7 +21,7 @@ export class UtilitiesService{
     };
 
     jsonToXml(jsonObject:object, compact:boolean=true):string{
-        // log('UtiService >> compact >>',compact);
+        // console.log('UtiService >> compact >>',compact);
         let options = {compact: true, ignoreComment: compact, spaces: 4};
 
         // Convert JSON object to XML
@@ -25,6 +29,24 @@ export class UtilitiesService{
 
         return result;
     };
+
+    log (...data:unknown[]) {
+        let envStr = 'app.env', debugStr = 'app.debug', loggingStr = 'app.logging';
+        let isLogging = false;
+        // console.log('UtilitiesService >> log >>', envStr,'=', this.config.get<string>(envStr));
+        // console.log('UtilitiesService >> log >>', debugStr,'=', this.config.get<string>(debugStr));
+        // console.log('UtilitiesService >> log >>', loggingStr,'=', this.config.get<string>(loggingStr));
+        if (this.config.get<string>(envStr) === 'development') isLogging = true;
+        else if (this.config.get<boolean>(debugStr) === true
+            || this.config.get<string>(debugStr) === 'true'
+            || this.config.get<string>(debugStr) === 'yes'
+            || this.config.get<number>(debugStr) === 1) isLogging = true;
+        else if (this.config.get<boolean>(loggingStr) === true
+            || this.config.get<string>(loggingStr) === 'true'
+            || this.config.get<string>(loggingStr) === 'yes'
+            || this.config.get<number>(loggingStr) === 1) isLogging = true;
+        if (isLogging) console.log('🧾 ',...data);
+    }
 }
 
 @Injectable()
@@ -58,17 +80,18 @@ export class HashService{
 /*
 https://emojicombos.com/
 
-📷📚💻📺🎧
-⭐✨⚡☄️☁️💨💭♨️🔥💦🧺
-✈️🛩️🚀🚚🔗🔨🔍
+📷📚💻📺📟🎧🎛️💾🌐🌍🔴💂🟢
+⭐✨⚡☄️☁️💨💭♨️💥🔥💦🧺
+✈️🛩️🚀🚚🔗⚔️🔨🔍🧬🛠🛠️⚒️🔧⚙️⌘
 😼🐎🐇🕊️
-🏠📅Ⓜ️👋👏😊👉👌👀
-🎀💗💯👥❓⚠️✅❌✔️💬
+🏛️🏠📅
+Ⓜ️👋👏😊👉👌👀💀🔔🔒
+🎀💗💯👥🚧❓❗⛔⚠️✅❌✔️🗪💬📋🧾📜📝📰#️⃣ℹ️🧩
 🌷🌼💐🌹🌸🌺
 🌲🌳🌴🌱🌿🍃🍂
 🍎🍒🍓🍇🍍🥑🍉🥝🥥🥕🌶️
 🥤🥗🍔🍗🍟🥓🧀🍚🍜🍟
-🛒🍹🍨❄️☀️🌈💎💍🕑
+🛒🍹🍨❄️☀️🌈💎💍🕑⚜️
 🪂🎈🪁⛰️⛱️
-🥇🏆🥈🎖️🥉
+🥇🏆🥈🎖️🥉🔰🚩
 */

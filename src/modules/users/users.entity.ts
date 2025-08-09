@@ -2,7 +2,8 @@ import { Entity, Unique, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 @Unique(['Email', 'UserCode'])
-export class UsersEntity {
+// [class name] must be like [table name] in db
+export class Users {
   @PrimaryGeneratedColumn()
   Id: number;
 

@@ -16,28 +16,27 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
-
   @Get()
   getAllUsers() {
-    return this.usersService.fetchAll();
+    // return this.usersService.findAllUsers();
+    return 'Only get 1 user everytimes';
   }
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
+  @Get(':id')
+  getOneUser(@Param('id') id: string) {
+    return this.usersService.findUserById(id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
+  @Post()
+  addNewUser(@Body() userDto: CreateUserDto) {
+    console.log('🧩 addNewUser >> userDto >>', userDto); // nếu truyền những properties ko có trong dto, thì nest sẽ bỏ qua chúng, chỉ lấy đúng các props trong dto
+    return this.usersService.createUser(userDto);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(id, updateUserDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

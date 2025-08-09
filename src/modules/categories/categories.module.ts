@@ -3,13 +3,13 @@ import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CategoriesEntity } from "./categories.entity";
+import { Categories } from "./categories.entity";
 import { DatabaseService } from '@db/database.service';
-import { DatabaseEntity } from '@db/database.entity';
+import { Database } from '@db/database.entity';
 import { UtilitiesService, HashService } from "@uti/utilities.service";
 
 @Module({
-  imports:[TypeOrmModule.forFeature([CategoriesEntity,DatabaseEntity])],
+  imports:[TypeOrmModule.forFeature([Categories,Database])],
   controllers: [CategoriesController],
   providers: [CategoriesService, DatabaseService, UtilitiesService, HashService],
 })
