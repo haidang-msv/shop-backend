@@ -6,7 +6,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import appConfig from "./config/app.config";
 import dbConfig from "./config/db.config";
-import { UtilitiesService, HashService } from '@modules/utilities/utilities.service';
 
 import { UsersModule } from '@modules/users/users.module';
 import { Users } from '@modules/users/users.entity';
@@ -105,26 +104,26 @@ import { Categories } from '@modules/categories/categories.entity';
     CategoriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService, UtilitiesService, HashService],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {
   constructor(private readonly configService: ConfigService) {
-    // console.log('get environment variable from .env file:');
-    // console.log('Type >>', this.configService.get<string>('DB_TYPE'));
-    // console.log('Host >>', this.configService.get<string>('DB_HOST'));
-    // console.log('Port >>', this.configService.get<string>('DB_PORT'));
-    // console.log('Username >>', this.configService.get<string>('DB_USER'));
-    // console.log('Password >>', this.configService.get<string>('DB_PASS'));
-    // console.log('Database >>', this.configService.get<string>('DB_NAME'));
+    // console.log('AppModule >> get environment variable from .env file:');
+    // console.log('AppModule >> Type >>', this.configService.get<string>('DB_TYPE'));
+    // console.log('AppModule >> Host >>', this.configService.get<string>('DB_HOST'));
+    // console.log('AppModule >> Port >>', this.configService.get<string>('DB_PORT'));
+    // console.log('AppModule >> Username >>', this.configService.get<string>('DB_USER'));
+    // console.log('AppModule >> Password >>', this.configService.get<string>('DB_PASS'));
+    // console.log('AppModule >> Database >>', this.configService.get<string>('DB_NAME'));
     
-    // console.log('get environment variable from .config file:');
-    // console.log('Type >>', this.configService.get<string>('db.type'));
-    // console.log('Host >>', this.configService.get<string>('db.host'));
-    // console.log('Port >>', this.configService.get<number>('db.port'));
-    // console.log('User >>', this.configService.get<string>('db.user'));
-    // console.log('Pass >>', this.configService.get<string>('db.pass'));
-    // console.log('Name >>', this.configService.get<string>('db.name'));
+    // console.log('AppModule >> get environment variable from .config file:');
+    // console.log('AppModule >> Type >>', this.configService.get<string>('db.type'));
+    // console.log('AppModule >> Host >>', this.configService.get<string>('db.host'));
+    // console.log('AppModule >> Port >>', this.configService.get<number>('db.port'));
+    // console.log('AppModule >> User >>', this.configService.get<string>('db.user'));
+    // console.log('AppModule >> Pass >>', this.configService.get<string>('db.pass'));
+    // console.log('AppModule >> Name >>', this.configService.get<string>('db.name'));
 
-    // console.log('App port >>', this.configService.get<string>('app.port'));
+    // console.log('AppModule >> App port >>', this.configService.get<string>('app.port'));
   }
 }

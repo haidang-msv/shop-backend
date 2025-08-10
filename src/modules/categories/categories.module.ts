@@ -6,11 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Categories } from "./categories.entity";
 import { DatabaseService } from '@db/database.service';
 import { Database } from '@db/database.entity';
-import { UtilitiesService, HashService } from "@uti/utilities.service";
 
 @Module({
   imports:[TypeOrmModule.forFeature([Categories,Database])],
   controllers: [CategoriesController],
-  providers: [CategoriesService, DatabaseService, UtilitiesService, HashService],
+  providers: [CategoriesService, DatabaseService],
 })
 export class CategoriesModule {}

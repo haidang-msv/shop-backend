@@ -14,45 +14,31 @@ export class UsersService {
     private usersRepo: Repository<Users>,
 
     @InjectRepository(Database)
-    private dbRepo:Repository<Database>,
-  ) {}
+    private dbRepo: Repository<Database>,
+  ) { }
 
   async findAllUsers(): Promise<Users[]> {
     return this.usersRepo.find();
   }
 
-  async findUserById(id: string): Promise<Users> {
+  async findUserById(id: string): Promise<any> {
+    // console.log('👤 findUserById >> id >>', id);
     let idNumber = 0;
-    if(!Number.isNaN(id)) idNumber = parseInt(id);
-    // console.log('🧩 findUserById >> id >>', id);
-    try {
-      // const found = await this.usersRepo.findOne({ where: { Id: idNumber } });
-      const found = await this.usersRepo.findOneBy({Id:idNumber});
-      if (!found) {
-        console.log('🧩 findUserById >> not found user!');
-        throw new NotFoundException(`User ["${id}"] not found!`);
-      }
-      return found;
-
-      // const cmd = 'select * from Users where Id='+idNumber;
-      // console.log('🧩 findUserById >> cmd >>', cmd);
-      // const found = await this.dbRepo.query(cmd);
-      // return found;
-    } catch (error) {
-      console.error('🚧',error);
-      return this.usersRepo.create({});
-    }
+    if (!Number.isNaN(id)) idNumber = parseInt(id);
+    // console.log('👤 findUserById >> idNumber >>', idNumber);
+    const found = await this.usersRepo.findOneBy({ Id: idNumber });
+    return found;
   }
-  
+
   async createUser(userDto: CreateUserDto): Promise<any> {
-    // console.log('🧩 createUser >> userDto >>', userDto);
+    // console.log('👤 createUser >> userDto >>', userDto);
     const { Email, UserCode, UserPass } = userDto;
     const usr = this.usersRepo.create({
       Email,
       UserCode,
       UserPass
     });
-    // console.log('🧩 createUser >> usr >>', usr);
+    // console.log('👤 createUser >> usr >>', usr);
     const output = await this.usersRepo.save(usr);
     return {
       Email: output.Email,
@@ -63,31 +49,41 @@ export class UsersService {
   async updateUser(id: string, userDto: UpdateUserDto): Promise<any> {
     try {
       const user = await this.findUserById(id);
-      console.log('🧩 findUser >> user >>', user);
+      console.log('👤 findUser >> user >>', user);
       if (typeof user === 'undefined') return this.usersRepo.create({});
-      
+
       const output = await this.usersRepo.update(id, userDto);
-      console.log('🧩 findUser >> user >>', user);
+      console.log('👤 findUser >> user >>', user);
 
       return output;
     } catch (error) {
-      console.error('🚧',error);
-      return this.usersRepo.create({});      
+      console.error('🚧', error);
+      return this.usersRepo.create({});
     }
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
+  // async findUserById2(id: string): Promise<Users> {
+  //   let idNumber = 0;
+  //   if(!Number.isNaN(id)) idNumber = parseInt(id);
+  //   // console.log('👤 findUserById >> id >>', id);
+  //   try {
+  //     // const found = await this.usersRepo.findOne({ where: { Id: idNumber } });
+  //     const found = await this.usersRepo.findOneBy({Id:idNumber});
+  //     if (!found) {
+  //       console.log('👤 findUserById >> not found user!');
+  //       throw new NotFoundException(`User ["${id}"] not found!`);
+  //     }
+  //     return found;
+
+  //     // const cmd = 'select * from Users where Id='+idNumber;
+  //     // console.log('👤 findUserById >> cmd >>', cmd);
+  //     // const found = await this.dbRepo.query(cmd);
+  //     // return found;
+  //   } catch (error) {
+  //     console.error('🚧',error);
+  //     return this.usersRepo.create({});
+  //   }
   // }
 
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
-
-  // async findUser(id: number):Promise<Users> {
-  //   const user = await this.userModel.findById(id);
-  //   if (!user) throw new NotFoundException('could not find the user');
-  //   return user;
-  // }
 
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { log } from 'node:console';
-import { UtilitiesService, HashService } from "@uti/utilities.service";
 
 import { Categories } from "./categories.entity";
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -19,8 +18,8 @@ export class CategoriesService {
     @InjectRepository(Database)
     private readonly dbRepo: Repository<Database>, //inject Entity vào Repository để gọi sp/fn thông qua repository
 
-    private readonly uti:UtilitiesService,
-    private readonly hashService:HashService,
+    // private readonly uti:UtilitiesService,
+    // private readonly hashService:HashService,
   ){}
 
   // way to call mssql store procedure via typeorm in nestjs
