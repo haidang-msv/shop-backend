@@ -21,12 +21,19 @@ export class UsersService {
     return this.usersRepo.find();
   }
 
-  async findUserById(id: string): Promise<any> {
+  async findUserById(id: string): Promise<Users|null> {
     // console.log('👤 findUserById >> id >>', id);
     let idNumber = 0;
     if (!Number.isNaN(id)) idNumber = parseInt(id);
     // console.log('👤 findUserById >> idNumber >>', idNumber);
     const found = await this.usersRepo.findOneBy({ Id: idNumber });
+    return found;
+  }
+
+  async findUserByEmail(email: string): Promise<Users|null> {
+    // console.log('👤 findUserByEmail >> email >> ', email);
+    if (email.trim() === '') return null;
+    const found = await this.usersRepo.findOneBy({ Email: email });
     return found;
   }
 
@@ -49,11 +56,11 @@ export class UsersService {
   async updateUser(id: string, userDto: UpdateUserDto): Promise<any> {
     try {
       const user = await this.findUserById(id);
-      console.log('👤 findUser >> user >>', user);
+      // console.log('👤 updateUser >> user >>', user);
       if (typeof user === 'undefined') return this.usersRepo.create({});
 
       const output = await this.usersRepo.update(id, userDto);
-      console.log('👤 findUser >> user >>', user);
+      // console.log('👤 updateUser >> output >>', output);
 
       return output;
     } catch (error) {

@@ -10,5 +10,6 @@ import { Database } from '@modules/database/database.entity';
   imports: [TypeOrmModule.forFeature([Users, Database])],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
