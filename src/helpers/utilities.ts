@@ -1,9 +1,8 @@
 import crypto from 'crypto'; // for HashService
 import xmlConverter from "xml-js"; // https://www.npmjs.com/package/xml-js
 import bcrypt from "bcrypt";
-const appConfig = require("../config/app.config");
-
-const saltRounds = 10; //
+const appConfig = require("../configs/app.config");
+const saltRounds = 10; // độ phức tạp khi hash text
 
 export const xmlToJson = function (xmlString:string, compact:boolean=true):object{
     // console.log('🛠️ >> compact >>',compact);
@@ -34,7 +33,7 @@ export const hashText = async function (plainText:string):Promise<string> {
     // }
 }
 
-export const compareHashText = async function (data:string, encrypted:string):Promise<boolean> {
+export const compareHashed = async function (data:string, encrypted:string):Promise<boolean> {
     return await bcrypt.compare(data, encrypted);
 }
 
@@ -63,6 +62,7 @@ export const generateSha256 = function (inputString:string):string {
 }
 
 export const clog = function (...data:unknown[]) {
+    console.log('appConfig >>', appConfig);
     let _config = appConfig.default();
     let env = _config.env,
      debug = _config.debug,
@@ -80,7 +80,10 @@ export const clog = function (...data:unknown[]) {
         || logging === 'true'
         || logging === 'yes'
         || logging === 1) isLogging = true;
-    if (isLogging) console.log('🛠️ >>',...data);
+    if (isLogging) {
+        // console.log('🛠️ >>',...data);
+        console.log(...data);
+    }
 }
 
 /*
@@ -91,7 +94,7 @@ https://emojicombos.com/
 ✈️🛩️🚀🚚🔗⚔️🔨🔍🧬🛠🛠️⚒️🔧⚙️⌘
 😼🐎🐇🕊️🪼
 🏛️🏠📅
-Ⓜ️👋👏😊👉👌💋👀💀🔔🔒
+Ⓜ️👋👏😊👉👌💋👀💀🔔🗝️🔑🔐🔒🆔🛡️ 
 🎀💗💯👥👤🚧❓❗⛔⚠️✅❌✔️🗪💬📋🧾📜📝📰#️⃣ℹ️🧩
 🌷🌼💐🌹🌸🌺
 🌲🌳🌴🌱🌿🍃🍂🍁

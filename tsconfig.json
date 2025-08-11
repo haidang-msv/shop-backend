@@ -15,10 +15,9 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
-      "@/*":["./src"], // alias for 'src' directory => Using an alias: import Button from '@/modules';
+      "@/*":["./src/*"], // alias for 'src' directory => Using an alias: import Button from '@/modules';
       "@modules/*": ["modules/*"], // alias for the 'modules' directory
-      "@db/*": ["modules/database/*"], // alias for the 'database' directory
-      "@uti/*": ["modules/utilities/*"], // alias for the 'utilities' directory
+      "@helpers/*": ["helpers/*"], // alias for the 'helpers' directory
     },
     "incremental": true,
     "skipLibCheck": true,

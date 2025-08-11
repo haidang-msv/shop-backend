@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { log } from 'node:console';
 
 import { Categories } from "./categories.entity";
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Database } from "@db/database.entity";
+// import { CreateCategoryDto } from '@modules/categories/dto/create-category.dto';
+// import { UpdateCategoryDto } from '@modules/categories/dto/update-category.dto';
+import { Database } from "@modules/database/database.entity";
 // import { HashService } from "@uti/hash.service";
 
 @Injectable()

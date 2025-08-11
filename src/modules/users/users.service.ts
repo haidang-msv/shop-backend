@@ -4,8 +4,9 @@ import { Repository } from 'typeorm';
 
 import { Users } from '@modules/users/users.entity';
 import { Database } from '@modules/database/database.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from '@modules/users/dto/create-user.dto';
+import { UpdateUserDto } from '@modules/users/dto/update-user.dto';
+import { hashText } from '@helpers/utilities';
 
 @Injectable()
 export class UsersService {
@@ -32,21 +33,39 @@ export class UsersService {
 
   async findUserByEmail(email: string): Promise<Users|null> {
     // console.log('👤 findUserByEmail >> email >> ', email);
-    if (email.trim() === '') return null;
-    const found = await this.usersRepo.findOneBy({ Email: email });
+    const data = email.trim();
+    if (data === '') return null;
+    const found = await this.usersRepo.findOneBy({ Email: data });
     return found;
   }
 
-  async createUser(userDto: CreateUserDto): Promise<any> {
+  async findUserByUserCode(code: string): Promise<Users|null> {
+    // console.log('👤 findUserByUserCode >> code >> ', code);
+    const data = code.trim();
+    if (data === '') return null;
+    const found = await this.usersRepo.findOneBy({ UserCode: data });
+    return found;
+  }
+
+  async createUser(userDto: CreateUserDto): Promise<any|null> {
     // console.log('👤 createUser >> userDto >>', userDto);
     const { Email, UserCode, UserPass } = userDto;
+    
+    let u = await this.findUserByEmail(Email);
+    if(u != null) return null;
+    
+    u = await this.findUserByUserCode(UserCode);
+    if(u != null) return null;
+
+    const hashedPassword = await hashText(UserPass);
     const usr = this.usersRepo.create({
       Email,
       UserCode,
-      UserPass
+      UserPass:hashedPassword
     });
     // console.log('👤 createUser >> usr >>', usr);
     const output = await this.usersRepo.save(usr);
+    
     return {
       Email: output.Email,
       UserCode: output.UserCode

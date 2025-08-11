@@ -1,0 +1,23 @@
+# Configuration for develoment environment
+
+# Application Settings
+APP_NAME="Shop-Backend"
+APP_PORT=3000
+APP_ENV=development
+APP_DEBUG=true
+APP_LOGGING=true
+APP_TIMEZONE=UTC
+APP_LOCALE=en
+
+# Database Configuration
+DB_TYPE=mssql # type in TypeOrmModule > useFactory throw an error ?? => dont know reason why!
+DB_HOST="THIN19\SQL2016" # use double quote because of special character inside string (\)
+DB_PORT=1433
+DB_USER=sa # if set key is USERNAME, nestjs will get current OS user
+DB_PASS=s@1234
+DB_NAME=ShopData
+
+# API Keys and Secrets
+# API_KEY=your_secret_api_key_here
+# JWT_SECRET=super_secret_jwt_key
+# JWT_EXPIRE=jwt_expire_datetime

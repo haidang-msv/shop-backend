@@ -4,8 +4,8 @@ import { AppService } from './app.service';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import appConfig from "./config/app.config";
-import dbConfig from "./config/db.config";
+import appConfig from "./configs/app.config";
+import dbConfig from "./configs/db.config";
 
 import { UsersModule } from '@modules/users/users.module';
 import { Users } from '@modules/users/users.entity';
@@ -13,6 +13,7 @@ import { RestaurantsModule } from '@modules/restaurants/restaurants.module';
 import { Restaurants } from '@modules/restaurants/restaurants.entity';
 import { CategoriesModule } from '@modules/categories/categories.module';
 import { Categories } from '@modules/categories/categories.entity';
+import { AuthModule } from '@modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -99,6 +100,7 @@ import { Categories } from '@modules/categories/categories.entity';
     //     };
     //   },
     // }),
+    AuthModule,
     UsersModule,
     RestaurantsModule,
     CategoriesModule,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { clog, xmlToJson, jsonToXml, generateMd5, generateSha256 } from 'helper/utilities';
+import { clog, xmlToJson, jsonToXml, generateMd5, generateSha256 } from 'helpers/utilities';
 
 @Injectable()
 export class AppService {

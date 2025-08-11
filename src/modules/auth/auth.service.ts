@@ -1,22 +1,50 @@
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+
 import { CreateUserDto } from '@modules/users/dto/create-user.dto';
 import { UsersService } from '@modules/users/users.service';
-import { Injectable } from '@nestjs/common';
-import { hashText } from 'helper/utilities';
+import { compareHashed, hashText } from '@helpers/utilities';
+import { Users } from '@modules/users/users.entity';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly userService:UsersService
-    ){}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+  ) {}
 
-    async registerUser(user:CreateUserDto):Promise<any>{
-        const isExisted = this.userService.findUserByEmail(user.Email) != null;
-        if (isExisted) return null;
-    
-        // user.UserPass = generateSha256(user.UserPass);
-        user.UserPass = await hashText(user.UserPass);
-        return this.userService.createUser(user);
+  async registerUser(user: CreateUserDto): Promise<any> {
+    return await this.usersService.createUser(user);
+  }
+
+  async validateUser(code: string, pass: string): Promise<any> {
+    let user = await this.usersService.findUserByEmail(code);
+    if (!user) user = await this.usersService.findUserByUserCode(code);
+    if (!user) return null;
+    const hashedPassword = await hashText(pass);
+    const isMatch = await compareHashed(pass, user.UserPass);
+    if (isMatch) return user;
+    return null;
+  }
+
+  async handleLogin(user: any): Promise<any> {
+    const payload = { username: user.email, sub: user.UserCode };
+    const accessToken = this.jwtService.sign(payload); // issue access token
+    return {
+      access_token: accessToken,
+    };
+  }
+
+  async fetchProfile(data:string):Promise<any|null>{
+    let user = await this.usersService.findUserByUserCode(data);
+    if(!user) return null;
+    user = await this.usersService.findUserByEmail(data);
+    if(!user) return null;
+    return {
+      Email: user.Email,
+      UserCode: user.UserCode,
+      UserRole:user.UserRole,
     }
-
-    async handleLogin():Promise<any>{}
+  }
 }
