@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 
 import { CreateUserDto } from '@modules/users/dto/create-user.dto';
 import { UsersService } from '@modules/users/users.service';
@@ -22,14 +21,13 @@ export class AuthService {
     let user = await this.usersService.findUserByEmail(code);
     if (!user) user = await this.usersService.findUserByUserCode(code);
     if (!user) return null;
-    const hashedPassword = await hashText(pass);
     const isMatch = await compareHashed(pass, user.UserPass);
     if (isMatch) return user;
     return null;
   }
 
-  async handleLogin(user: any): Promise<any> {
-    const payload = { username: user.email, sub: user.UserCode };
+  async handleLogin(user: Users): Promise<any> {
+    const payload = { username: user.Email, sub: user.UserCode };
     const accessToken = this.jwtService.sign(payload); // issue access token
     return {
       access_token: accessToken,
@@ -38,8 +36,7 @@ export class AuthService {
 
   async fetchProfile(data:string):Promise<any|null>{
     let user = await this.usersService.findUserByUserCode(data);
-    if(!user) return null;
-    user = await this.usersService.findUserByEmail(data);
+    if(!user) user = await this.usersService.findUserByEmail(data);
     if(!user) return null;
     return {
       Email: user.Email,

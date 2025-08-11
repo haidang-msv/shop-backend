@@ -14,6 +14,8 @@ import { Restaurants } from '@modules/restaurants/restaurants.entity';
 import { CategoriesModule } from '@modules/categories/categories.module';
 import { Categories } from '@modules/categories/categories.entity';
 import { AuthModule } from '@modules/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -106,7 +108,14 @@ import { AuthModule } from '@modules/auth/auth.module';
     CategoriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [
+    AppService,
+    ConfigService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
+    }
+  ],
 })
 export class AppModule {
   constructor(private readonly configService: ConfigService) {

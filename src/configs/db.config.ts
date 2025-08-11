@@ -8,10 +8,10 @@ cung cấp một không gian tên (tiền tố - app) cho cấu hình để trá
 
 const dbConfig = () => ({
     type: process.env.DB_TYPE || 'mssql',
-    host: process.env.DB_HOST || 'THIN19\\SQL2016',//'UBUNTU-HD',//
+    host: process.env.DB_HOST || 'UBUNTU-HD',//'THIN19\\SQL2016',//
     port: process.env.DB_PORT || 1433,
     user: process.env.DB_USER || 'sa',
-    pass: process.env.DB_PASS || 's@1234',//'Bhdang@9818.com',//
+    pass: process.env.DB_PASS || 'Bhdang@9818.com',//'s@1234',//
     name: process.env.DB_NAME || 'ShopData',
     // entities: [__dirname + '/*.entity{.ts,.js}'], // load all of entity file in [dirname] module without import Entity Class
     options: {

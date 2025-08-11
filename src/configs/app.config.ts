@@ -15,7 +15,7 @@ const appConfig = () => ({
     timezone: process.env.APP_TIMEZONE || 'UTC',
     locale: process.env.APP_LOCALE || 'en',
     jwtsecret: process.env.JWT_SECRET || 'd9389834-5c98-4394-a08b-3ca360fc7443',  // get here: https://www.uuidgenerator.net
-    jwtexpire: process.env.JWT_EXPIRE || '10d', // s=second, m=minute, h=hour, d=day
+    jwtexpire: process.env.JWT_EXPIRE || '60m', // s=second, m=minute, h=hour, d=day
 });
 
 export default registerAs('app', appConfig);

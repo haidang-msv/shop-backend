@@ -62,7 +62,7 @@ export const generateSha256 = function (inputString:string):string {
 }
 
 export const clog = function (...data:unknown[]) {
-    console.log('appConfig >>', appConfig);
+    // console.log('🛠️ >> appConfig >>', appConfig);
     let _config = appConfig.default();
     let env = _config.env,
      debug = _config.debug,
