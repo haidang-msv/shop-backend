@@ -20,6 +20,9 @@ export class Users {
   UserRole: string;
 
   @Column({ type: 'nvarchar', length: 200 })
+  Fullname: string;
+
+  @Column({ type: 'nvarchar', length: 200 })
   Address: string;
 
   @Column({ type: 'nvarchar', length: 200 })

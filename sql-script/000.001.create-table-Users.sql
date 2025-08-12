@@ -8,6 +8,7 @@ create table Users
     , UserCode varchar(50) not null unique
 	, UserPass nvarchar(200) null --hashed
     , UserRole varchar(50) default('')
+    , Fullname nvarchar(200) default('')
     , [Address] nvarchar(200) default('')
     , Photo nvarchar(200) default('')
     , AccountType nvarchar(200) default('')--local,gg,github

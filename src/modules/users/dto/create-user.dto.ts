@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, Length, MaxLength } from "class-validator";
+import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsOptional, Length, MaxLength } from "class-validator";
 
 export class CreateUserDto {
     @IsNotEmpty({ message: 'Email address must not be empty' }) // Bắt buộc phải gửi lên
@@ -15,6 +15,21 @@ export class CreateUserDto {
     // @MaxLength(200)
     @Length(6, 200, { message: 'Password must be between 6 and 200 characters' })
     UserPass: string;
+
+    @IsBoolean()
+    @IsOptional() // Không bắt buộc phải gửi lên
+    IsActive: boolean;
+
+    @IsOptional() // Không bắt buộc phải gửi lên
+    ActiveCode:string;
+
+    @IsDate()
+    @IsOptional() // Không bắt buộc phải gửi lên
+    ExpiredCode:Date;
+
+    @IsOptional() // Không bắt buộc phải gửi lên
+    @MaxLength(200, {message:'Fullname max length is 200 characters'})
+    Fullname: string;
 
     @IsOptional() // Không bắt buộc phải gửi lên
     @MaxLength(50, {message:'Email address max length is 50 characters'})

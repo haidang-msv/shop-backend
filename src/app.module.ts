@@ -16,6 +16,8 @@ import { Categories } from '@modules/categories/categories.entity';
 import { AuthModule } from '@modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -102,6 +104,32 @@ import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
     //     };
     //   },
     // }),
+    MailerModule.forRootAsync({
+     imports: [ConfigModule],
+     inject: [ConfigService],
+     useFactory: async (config:ConfigService) => ({
+      transport: {
+            host: 'smtp.gmail.com',
+            port: 465, // Use 587 for TLS, 465 for SSL
+            secure: true, // Use 'true' if port is 465 (SSL), 'false' if port is 587 (TLS)
+            auth: {
+              user: config.get<string>('app.mailuser'), // Your Gmail address
+              pass: config.get<string>('app.mailpass'), // Your generated App Password
+            },
+      },
+      template: {
+        dir: process.cwd() + '/src/templates/mail/', // đường dẫn đến file template. cwd()=current work directory
+        adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+        options: {
+          strict: true,
+        },
+      },
+      defaults: {
+       from: '"No Reply" <no-reply@localhost>',
+      },
+      //preview: true,
+     }),
+    }),
     AuthModule,
     UsersModule,
     RestaurantsModule,

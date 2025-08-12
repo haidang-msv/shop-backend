@@ -52,4 +52,11 @@ export class AuthController {
    let output = await this.authService.fetchProfile(req.user.email);
    return output;
   }
+
+  @Get('mail')
+  @Public()
+  async sendEmail() {
+    await this.authService.sendEmail('dangkuto18cm@gmail.com', 'HaiDang', 'abd-345');
+    return 'ok';
+  }
 }

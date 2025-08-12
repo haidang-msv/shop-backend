@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import dayjs from 'dayjs'
+import { v4 as uuidv4 } from 'uuid';
 
 import { Users } from '@modules/users/users.entity';
 import { Database } from '@modules/database/database.entity';
 import { CreateUserDto } from '@modules/users/dto/create-user.dto';
 import { UpdateUserDto } from '@modules/users/dto/update-user.dto';
-import { hashText } from '@helpers/utilities';
+import { clog, hashText } from '@helpers/utilities';
+import { MailService } from '@modules/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +19,8 @@ export class UsersService {
 
     @InjectRepository(Database)
     private dbRepo: Repository<Database>,
+
+    private readonly mailService:MailService,
   ) { }
 
   async findAllUsers(): Promise<Users[]> {
@@ -23,16 +28,16 @@ export class UsersService {
   }
 
   async findUserById(id: string): Promise<Users|null> {
-    // console.log('👤 findUserById >> id >>', id);
+    // clog('👤 findUserById >> id >>', id);
     let idNumber = 0;
     if (!Number.isNaN(id)) idNumber = parseInt(id);
-    // console.log('👤 findUserById >> idNumber >>', idNumber);
+    // clog('👤 findUserById >> idNumber >>', idNumber);
     const found = await this.usersRepo.findOneBy({ Id: idNumber });
     return found;
   }
 
   async findUserByEmail(email: string): Promise<Users|null> {
-    // console.log('👤 findUserByEmail >> email >> ', email);
+    // clog('👤 findUserByEmail >> email >> ', email);
     const data = email.trim();
     if (data === '') return null;
     const found = await this.usersRepo.findOneBy({ Email: data });
@@ -40,7 +45,7 @@ export class UsersService {
   }
 
   async findUserByUserCode(code: string): Promise<Users|null> {
-    // console.log('👤 findUserByUserCode >> code >> ', code);
+    // clog('👤 findUserByUserCode >> code >> ', code);
     const data = code.trim();
     if (data === '') return null;
     const found = await this.usersRepo.findOneBy({ UserCode: data });
@@ -48,7 +53,7 @@ export class UsersService {
   }
 
   async createUser(userDto: CreateUserDto): Promise<any|null> {
-    // console.log('👤 createUser >> userDto >>', userDto);
+    // clog('👤 createUser >> userDto >>', userDto);
     const { Email, UserCode, UserPass } = userDto;
     
     let u = await this.findUserByEmail(Email);
@@ -61,25 +66,43 @@ export class UsersService {
     const usr = this.usersRepo.create({
       Email,
       UserCode,
-      UserPass:hashedPassword
+      UserPass:hashedPassword,
+      IsActive:false,
+      ActiveCode:uuidv4(),
+      ExpiredCode:dayjs().add(1, 'year'),
     });
-    // console.log('👤 createUser >> usr >>', usr);
+    
+    // save new user
+    // clog('👤 createUser >> usr >>', usr);
     const output = await this.usersRepo.save(usr);
     
+    // send activation mail
+    this.mailService.sendActivationEmail(output.Email, output.Fullname, output.ActiveCode);
+
+    // return result after create new user
     return {
       Email: output.Email,
-      UserCode: output.UserCode
+      UserCode: output.UserCode,
+      ActiveCode: output.ActiveCode,
     };
+  }
+
+  async activateUser(){
+    try {
+      
+    } catch (error) {
+      clog('👤 activateUser >> error >>', error)
+    }
   }
 
   async updateUser(id: string, userDto: UpdateUserDto): Promise<any> {
     try {
       const user = await this.findUserById(id);
-      // console.log('👤 updateUser >> user >>', user);
+      // clog('👤 updateUser >> user >>', user);
       if (typeof user === 'undefined') return this.usersRepo.create({});
 
       const output = await this.usersRepo.update(id, userDto);
-      // console.log('👤 updateUser >> output >>', output);
+      // clog('👤 updateUser >> output >>', output);
 
       return output;
     } catch (error) {
@@ -91,18 +114,18 @@ export class UsersService {
   // async findUserById2(id: string): Promise<Users> {
   //   let idNumber = 0;
   //   if(!Number.isNaN(id)) idNumber = parseInt(id);
-  //   // console.log('👤 findUserById >> id >>', id);
+  //   // clog('👤 findUserById >> id >>', id);
   //   try {
   //     // const found = await this.usersRepo.findOne({ where: { Id: idNumber } });
   //     const found = await this.usersRepo.findOneBy({Id:idNumber});
   //     if (!found) {
-  //       console.log('👤 findUserById >> not found user!');
+  //       clog('👤 findUserById >> not found user!');
   //       throw new NotFoundException(`User ["${id}"] not found!`);
   //     }
   //     return found;
 
   //     // const cmd = 'select * from Users where Id='+idNumber;
-  //     // console.log('👤 findUserById >> cmd >>', cmd);
+  //     // clog('👤 findUserById >> cmd >>', cmd);
   //     // const found = await this.dbRepo.query(cmd);
   //     // return found;
   //   } catch (error) {

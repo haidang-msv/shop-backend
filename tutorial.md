@@ -15,6 +15,14 @@ npm install -g @nestjs/cli
 npm i bcrypt @types/bcrypt
 <!-- npm i --exact bcrypt@6.0.0 @types/bcrypt@6.0.0 -->
 
+## cài đặt gói uuid - sinh id ngẫu nhiên tự động
+npm i uuid
+<!-- npm i --exact uuid@11.1.0 -->
+
+## cài đặt gói dayjs - thao tác với kiểu ngày giờ
+npm i dayjs
+<!-- npm i --exact dayjs@1.11.13 -->
+
 ## cài đặt gói xml-js (chuyển đổi qua lại xml & js/json)
 npm i xml-js
 <!-- npm i --exact xml-js@1.6.11 -->
@@ -70,6 +78,16 @@ npm i @nestjs/jwt passport-jwt
 npm i @types/passport-jwt
 <!-- npm i --exact @nestjs/jwt@11.0.0 passport-jwt@4.0.1 -->
 <!-- npm i --exact @types/passport-jwt@4.0.1 -->
+
+## cài đặt gói nodemailer dùng để gửi mail
+# @nestjs-modules/mailer: module gửi mail sử dụng nodemailer
+# nodemailer: core thực hiện gửi mail, cấu hình mail
+# handlebars: sử dụng template để gửi mail
+# @type/nodemailer: type definitions cho nodemailer
+npm install @nestjs-modules/mailer nodemailer handlebars
+npm install @type/nodemailer
+<!-- npm install --exact @nestjs-modules/mailer@2.0.2 nodemailer@7.0.5 handlebars@4.7.8 -->
+<!-- npm install --exact @type/nodemailer@6.4.17 -->
 
 <!-- ##################################################################################################### -->
 
