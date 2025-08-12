@@ -122,7 +122,7 @@ export class AppModule {
     // console.log('AppModule >> get environment variable from .env file:');
     // console.log('AppModule >> Type >>', this.configService.get<string>('DB_TYPE'));
     // console.log('AppModule >> Host >>', this.configService.get<string>('DB_HOST'));
-    // console.log('AppModule >> Port >>', this.configService.get<string>('DB_PORT'));
+    // console.log('AppModule >> Port >>', this.configService.get<number>('DB_PORT'));
     // console.log('AppModule >> Username >>', this.configService.get<string>('DB_USER'));
     // console.log('AppModule >> Password >>', this.configService.get<string>('DB_PASS'));
     // console.log('AppModule >> Database >>', this.configService.get<string>('DB_NAME'));

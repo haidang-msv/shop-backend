@@ -3,7 +3,7 @@ import { registerAs } from '@nestjs/config';
 /*
 registerAs được sử dụng để quản lý các cấu hình tùy chỉnh của namespacing configs.
 tức là, ta sẽ định nghĩa một đối tượng cấu hình và xuất nó bằng nestjs registerAs(),
-cung cấp một không gian tên (tiền tố - app) cho cấu hình để tránh xung đột giữa những key cấu hình khác (nếu có).
+cung cấp một không gian tên (tiền tố - db) cho cấu hình để tránh xung đột giữa những key cấu hình khác (nếu có).
 */
 
 const dbConfig = () => ({

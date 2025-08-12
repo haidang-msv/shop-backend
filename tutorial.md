@@ -30,12 +30,12 @@ npm i typeorm @nestjs/typeorm
 <!-- npm i --exact typeorm@0.3.25 @nestjs/typeorm@11.0.0 -->
 
 # các gói bổ sung cho typeorm
-npm i reflect-metadata # (0.2.2)
+npm i reflect-metadata <!-- (0.2.2) -->
 npm i @types/node <!-- gói type definitions cho thư viện node (24.2.1) hỗ trợ khi viết mã TypeScript -->
 npm i -g ts-node <!-- để có thể thao tác trực tiếp code TypeScript trên Node mà ko cần biên dịch trước (10.9.2) -->
 
 # cài đặt driver csdl để sử dụng với typeorm (https://typeorm.io/docs/getting-started)
-# TypeORM hỗ trợ nhiều hệ quản trị csdl phổ biến như MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, SAP Hana...
+# TypeORM hỗ trợ nhiều hệ quản trị csdl như MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle...
 # Tùy vào csdl mà cài đặt các gói thư viện thao tác cho phù hợp
 npm i mssql <!-- Sql Server (11.0.1) -->
 npm i mongodb <!-- MongoDB (6.18.0) -->
@@ -54,7 +54,7 @@ npm i class-validator class-transformer
 
 ## cài đặt gói passport (hộ chiếu xác thực)
 # passport: middleware xác thực thông qua một bộ plugin mở rộng được gọi là strategies.
-# @nestjs/passport: thư viện các phương thức/properties thao tác với passport
+# @nestjs/passport: thư viện các method/properties thao tác với passport
 # passport-local: module xác thực username & password cục bộ trong ứng dụng
 # @types/passport-local: gói type definitions cho thư viện passport-local hỗ trợ khi viết mã TypeScript
 npm i passport @nestjs/passport passport-local
@@ -64,7 +64,7 @@ npm i @types/passport-local
 
 ## cài đặt gói jwt (Json Web Token)
 # @nestjs/jwt:  gói tiện ích hỗ trợ thao tác JWT
-# passport-jwt: dùng để triển khai chiến lược JWT
+# passport-jwt: dùng để triển khai chiến lược xác thực JWT
 # @types/passport-jwt: cung cấp các định nghĩa kiểu TypeScript.
 npm i @nestjs/jwt passport-jwt
 npm i @types/passport-jwt
@@ -104,6 +104,142 @@ trong file launch.json vừa được tạo ra, copy và paste đoạn code cấ
 Từ lúc này trở đi, có thể chạy app bằng chức năng Start Debugging trong menu Run của VS Code,
 hoặc trong Run and Debug panel, hoặc phím F5.
 <!-- file launch.json sẽ được lưu tại project-name/.vscode/launch.json -->
+
+<!-- ##################################################################################################### -->
+
+# cách viết và đọc file .env, file cấu hình biến môi trường
+
+## tạo file .env và nội dung
+tại thư mục gốc của ứng dụng, tạo file với tên .env (ko có phần mở rộng),
+nội dung có thể tương tự như bên dưới
+<!--
+# Configuration for develoment environment
+
+# Application Settings
+APP_NAME="Shop-Backend"
+APP_PORT=3000
+APP_ENV=development
+APP_DEBUG=true
+APP_LOGGING=true
+APP_TIMEZONE=UTC
+APP_LOCALE=en
+
+# Database Configuration
+DB_TYPE=mssql # type in TypeOrmModule > useFactory throw an error ?? => dont know reason why!
+DB_HOST="THIN19\SQL2016" # use double quote because of special character inside string (\)
+DB_PORT=1433
+DB_USER=sa # if set key is USERNAME, nestjs will get current OS user
+DB_PASS=s@1234
+DB_NAME=ShopData
+
+# API Keys and Secrets
+API_KEY=your_secret_api_key_here
+JWT_SECRET='d9389834-5c98-4394-a08b-3ca360fc7443'
+JWT_EXPIRE=60m # s=second, m=minute, h=hour, d=day
+-->
+(*) nhớ thêm [.env] vào file .gitignore, để khi push code lên github, nó sẽ bỏ qua file .env,
+để tránh làm lộ các thông tin quan trọng như cấu hình db, hệ thống.
+
+## tạo file cấu hình biến môi trường
+trong thư mục [src], tạo thư mục [configs] (hoặc đặt tên gì gợi nhớ cũng đc).
+trong thư mục [configs], tạo file [app.config.ts] & [db.config.ts].
+
+file app.config.ts: dùng để lưu cấu hình của ứng dụng
+file db.config.ts: dùng để lưu cấu hình database
+(có thể viết chung 1 file cấu hình cũng đc, ko cần tách file như hd)
+
+nội dung file [app.config.ts]
+<!--
+import * as process from 'node:process';
+import { registerAs } from '@nestjs/config';
+const appConfig = () => ({
+    name: process.env.APP_NAME || 'Shop-backend',
+    port: process.env.APP_PORT || 3000,
+    env: process.env.APP_ENV || 'development', // 'production', //
+    debug: process.env.APP_DEBUG === 'true',
+    logging: process.env.APP_LOGGING === 'true',
+    timezone: process.env.APP_TIMEZONE || 'UTC',
+    locale: process.env.APP_LOCALE || 'en',
+    jwtsecret: process.env.JWT_SECRET || 'd9389834-5c98-4394-a08b-3ca360fc7443',  // get here: https://www.uuidgenerator.net
+    jwtexpire: process.env.JWT_EXPIRE || '60m', // s=second, m=minute, h=hour, d=day
+});
+export default registerAs('app', appConfig);
+-->
+
+nội dung file [db.config.ts]
+<!--
+import * as process from 'node:process';
+import { registerAs } from '@nestjs/config';
+const dbConfig = () => ({
+    type: process.env.DB_TYPE || 'mssql',
+    host: process.env.DB_HOST || 'UBUNTU-HD',//'THIN19\\SQL2016',//
+    port: process.env.DB_PORT || 1433,
+    user: process.env.DB_USER || 'sa',
+    pass: process.env.DB_PASS || 'Bhdang@9818.com',//'s@1234',//
+    name: process.env.DB_NAME || 'ShopData',
+    // entities: [__dirname + '/*.entity{.ts,.js}'], // load all of entity file in [dirname] module without import Entity Class
+    options: {
+        encrypt: false, // MSSQL-specific option
+    },
+export default registerAs('db', dbConfig);
+-->
+(*) các key theo sau [process.env.] chính là các key đã định nghĩa trong file [.env],
+nếu trong file .env ko có những key này, thì sẽ trả về giá trị sau dấu [||] hoặc undifined
+
+## cách load file cấu hình biến môi trường, hoặc file .env
+sau khi cài đặt gói Configuration (@nestjs/config) do nestjs cung cấp,
+ta sẽ nạp (load) tất cả cấu hình vào ứng dụng ở chế độ toàn cục (global),
+để có thể truy cập các config ở bất kỳ đâu trong ứng dụng.
+
+trong file [app.module.ts], trong phần [imports] thêm vào đoạn code sau
+<!--
+ConfigModule.forRoot({
+    isGlobal: true,  // Makes config accessible throughout the application
+    load:[appConfig, dbConfig],
+}),
+-->
+
+import các thành phần cần thiết
+<!--
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import appConfig from "./configs/app.config";
+import dbConfig from "./configs/db.config";
+-->
+
+## cách đọc cấu hình
+tại file module/controller/service cần lấy/đọc cấu hình,
+trong hàm [constructor], thêm service của ConfigService
+<!-- constructor(private readonly configService: ConfigService) {} -->
+
+lấy/đọc cấu hình tương ứng với key đã định nghĩa
+đọc trực tiếp từ file [.env] (cách A)
+<!--
+console.log('Host >>', this.configService.get<string>('DB_HOST'));
+console.log('Port >>', this.configService.get<number>('DB_PORT'));
+-->
+(DB_HOST & DB_PORT là những key đã định nghĩa trong file .env)
+
+đọc từ file [*.config.ts] (cách B)
+<!--
+console.log('Host >>', this.configService.get<string>('db.host'));
+console.log('Port >>', this.configService.get<number>('db.port'));
+-->
+(host & port là những key đã định nghĩa trong file *.config.ts
+tiền tố db là namespace đã export trong hàm registerAs)
+
+## lưu ý quan trọng với file .env
+tên file phải là [.env], nếu khác, nestjs sẽ ko hiểu.
+
+phải đặt tại thư mục gốc của ứng dụng, nếu khác, ConfigService của nestjs sẽ ko có tác dụng
+
+khi đọc file cấu hình theo (cách A), nếu muốn thay đổi cấu hình trong .env,
+phải restart ứng dụng, nestjs mới hiểu cấu hình mới.
+
+Khi đọc file cấu hình theo (cách B), thay đổi cấu hình trong file *.config.ts,
+ko cần restart ứng dụng, mỗi lần lưu file, nestjs sẽ tự load cấu hình mới.
+
+
 
 <!-- ##################################################################################################### -->
 
