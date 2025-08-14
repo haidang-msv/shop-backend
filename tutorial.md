@@ -326,7 +326,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           },
         },
         template: {
-          dir: process.cwd() + '/src/modules/mail/templates/', // đường dẫn đến file template. cwd()=current work directory
+          dir: process.cwd() + '/src/modules/mail/templates/', // đường dẫn đến file template
           adapter: new HandlebarsAdapter(), // hoặc new PugAdapter(), hoặc new EjsAdapter()
           options: {
             strict: true,
@@ -344,7 +344,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 })
 export class MailModule {}
 -->
-sau khi tạo module [mail], trong file [app.module.ts], trong phần [import], thêm class [MailModule]
+sau khi tạo module [mail], trong file [app.module.ts], trong phần [import], thêm class [MailModule] tương tự những module khác
 
 ## cách cấu hình 2:
 file [app.module.ts], trong phần [import], copy đoạn cấu hình của cách 1 [MailerModule.forRootAsync] và dán vào
@@ -353,10 +353,10 @@ chú ý key [dir] trong đoạn code cấu hình, cần thay đổi cho phù h�
 trong đó:
 [process.cwd()] trả về đường dẫn thư mục chứa file mà nodejs gọi chạy đầu tiên khi ứng dụng bắt đầu chạy,
 (hay trong nestjs là thư mục chứa file main.ts)
-[__dirname] trả về đường dẫn thư mục chứa file mà tập tin đang chạy nằm
+[__dirname] trả về đường dẫn thư mục mà tập tin đang thực thi tồn tại trong đó
 
 ## cách thực hiện gửi mail
-tạo file mail.service.ts để viết service gửi mail, thêm code như bên dưới
+tạo file [mail.service.ts] để viết service gửi mail, thêm code như bên dưới
 <!--
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -367,8 +367,8 @@ export class MailService {
         private readonly mailerService: MailerService
     ) { }
 
-    async sendActivationEmail(to: string, name: string, code: string) {
-        // await // gửi mail bất đồng bộ, nên ko sử dụng await
+    async sendActivationEmail(to: string, name: string, code: string, expire: string) {
+        // await // thực hiện gửi mail bất đồng bộ, nên ko sử dụng await
         this.mailerService.sendMail({
             to: to,
             subject: 'Activate your account 🔑',
@@ -396,14 +396,19 @@ ta sẽ phải định nghĩa những file/folder đó trong config của [compi
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "src", // 🗃️
   "compilerOptions": {
     "deleteOutDir": true, // xóa & tạo lại thư mục [dist] mỗi lần rebuild để đảm bảo code là mới nhất
-    "assets": ["modules/mail/templates/**/*"], // 👈  or "**/*.hbs" all files ending with .hbs
-    "watchAssets": true // 🤖 copy mọi thứ bên trong [assets] vào thư mục [dist] ở chế độ watch
+    "assets": [
+      "/modules/mail/templates"  // 👈 copy tất cả file/folder trong thư mục templates sang thư mục tương ứng trong dist
+      //"/modules/mail/templates/*.hbs" // hoặc chỉ copy những file có extension là .hbs
+    ],
+    "watchAssets": true // 🤖 thực hiện copy [assets] mỗi khi run/build ứng dụng
   }
 }
 -->
+trong đó:
+path trong [assets] là đường dẫn tính từ [sourceRoot] (chính là [src])
 
 <!-- ##################################################################################################### -->
 
