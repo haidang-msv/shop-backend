@@ -53,10 +53,4 @@ export class AuthController {
    return output;
   }
 
-  @Get('mail')
-  @Public()
-  async sendEmail() {
-    await this.authService.sendEmail('dangkuto18cm@gmail.com', 'HaiDang', 'abd-345');
-    return 'ok';
-  }
 }

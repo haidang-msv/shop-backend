@@ -2,7 +2,7 @@ import crypto from 'crypto'; // for HashService
 import xmlConverter from "xml-js"; // https://www.npmjs.com/package/xml-js
 import bcrypt from "bcrypt";
 const appConfig = require("../configs/app.config");
-const saltRounds = 10; // độ phức tạp khi hash text
+const saltRounds = 12; // độ phức tạp khi hash text
 
 export const xmlToJson = function (xmlString:string, compact:boolean=true):object{
     // console.log('🛠️ >> compact >>',compact);
@@ -89,18 +89,19 @@ export const clog = function (...data:unknown[]) {
 /*
 https://emojicombos.com/
 
-📷📚💻📺📟🎧🎸🎛️💾🌐🌍🔴💂🟢
+📷💻📺📟🎬🕑🎧🚦🔗🎸🎛️💾🌐🌍🔴🟢Ⓜ️
 ⭐✨⚡☄️☁️💨💭♨️💥🔥💦🧺
-✈️🛩️🚀🚚🔗⚔️🔨🔍🧬🛠🛠️⚒️🔧⚙️⌘
-😼🐎🐇🕊️🪼
+🚚🛒✈️🛩️🚀⚔️🔨🔍🧬🛠🛠️⚒️🔧⚙️📌⌘🧩⚜️♻️
+😼🐎🐇🕊️🐒🐑
 🏛️🏠📅
-Ⓜ️👋👏😊👉👌💋👀💀🔔🗝️🔑🔐🔒🆔🛡️ 
-🎀💗💯👥👤🚧❓❗⛔⚠️✅❌✔️🗪💬📋🧾📜📝📰#️⃣ℹ️🧩
+🤖💂😊👋👏✋👉👈👌💋👀💀🧠🔔🗝️🔑🔐🔒🆔#️⃣ℹ️🔄🛡️
+🎀💗💯👥👤🚧❓❗⛔⚠️✅❌✔️🗪💬
+🧾📜📋📑📝📄📰🗐⿻📕📚
 🌷🌼💐🌹🌸🌺
 🌲🌳🌴🌱🌿🍃🍂🍁
 🍎🍒🍓🍇🍍🥑🍉🥝🥥🥕🌶️
 🥤🥗🍔🍗🍟🥓🧀🍚🍜🍟
-🛒🍹🍨❄️☀️🌈💎💍🕑⚜️
+🍹🍨❄️☀️🌈💎💍
 🪂🎈🪁⛰️⛱️
 🥇🏆🥈🎖️🥉🔰🚩
 */

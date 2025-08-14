@@ -14,6 +14,7 @@ const dbConfig = () => ({
     pass: process.env.DB_PASS || 'Bhdang@9818.com',//'s@1234',//
     name: process.env.DB_NAME || 'ShopData',
     // entities: [__dirname + '/*.entity{.ts,.js}'], // load all of entity file in [dirname] module without import Entity Class
+    // entities: [process.cwd() + '../*.entity{.ts,.js}'], // cwd()=current work directory
     options: {
         encrypt: false, // MSSQL-specific option
     },

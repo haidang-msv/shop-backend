@@ -1,5 +1,6 @@
 # các bước xây dựng nestjs backend server
 
+
 <!-- ##################################################################################################### -->
 
 # cài đặt các công cụ cần thiết
@@ -89,6 +90,29 @@ npm install @type/nodemailer
 <!-- npm install --exact @nestjs-modules/mailer@2.0.2 nodemailer@7.0.5 handlebars@4.7.8 -->
 <!-- npm install --exact @type/nodemailer@6.4.17 -->
 
+
+<!-- ##################################################################################################### -->
+
+# cấu hình thêm prefix vào mỗi endpoint api
+
+giả sử đường dẫn ứng dụng là localhost:3000,
+api đăng nhập sẽ là localhost:3000/auth/login,
+api xem profile người dùng là localhost:3000/user/profile,
+lúc này ta muốn thêm [api/v1] vào trước 2 endpoint [auth/login] & [user/profile] để đánh dấu phiên bản của api,
+(hoặc trường hợp muốn triển khai tính năng mới đến một số ít người dùng)
+cách tiến hành: trong file [main.ts], trong function bootstrap(), bên dưới dòng NestFactory.create(AppModule),
+thêm dòng sau
+<!--
+app.setGlobalPrefix('api/v1', { exclude: ['', 'health'] }); // Excludes /health from the global prefix
+-->
+trong đó:
+[api/v1] là prefix muốn thêm
+trong [exclude] là path muốn loại trừ
+mặc định khi thêm prefix, nestjs sẽ áp dụng cho tất cả endpoint trong ứng dụng
+nên lúc này, khi người dùng nhập [localhost:3000] sẽ ko trả về kq mong muốn, vì thiếu 
+lúc này exclude sẽ giải quyết vấn đề, như dòng code bên trên,
+ta sẽ loại trừ 2 path localhost:3000 và localhost:3000/health, sẽ ko cần thêm [api/v1]
+
 <!-- ##################################################################################################### -->
 
 # cấu hình để chạy debug nest trong vs code
@@ -122,6 +146,7 @@ trong file launch.json vừa được tạo ra, copy và paste đoạn code cấ
 Từ lúc này trở đi, có thể chạy app bằng chức năng Start Debugging trong menu Run của VS Code,
 hoặc trong Run and Debug panel, hoặc phím F5.
 <!-- file launch.json sẽ được lưu tại project-name/.vscode/launch.json -->
+
 
 <!-- ##################################################################################################### -->
 
@@ -246,6 +271,15 @@ console.log('Port >>', this.configService.get<number>('db.port'));
 (host & port là những key đã định nghĩa trong file *.config.ts
 tiền tố db là namespace đã export trong hàm registerAs)
 
+## cách đọc file cấu hình trong file main.ts
+
+import thư viện ConfigService để load file cấu hình
+<!-- import { ConfigService } from '@nestjs/config'; -->
+trong function bootstrap(), bên dưới dòng NestFactory.create(AppModule), thêm dòng sau
+<!-- const configService = app.get(ConfigService); -->
+để đọc/lấy cấu hình đã định nghĩa, ta sử dụng đối tượng configService đã khai báo ở bước trên
+<!-- let port = configService.get<number>('app.port'); -->
+
 ## lưu ý quan trọng với file .env
 tên file phải là [.env], nếu khác, nestjs sẽ ko hiểu.
 
@@ -258,8 +292,124 @@ Khi đọc file cấu hình theo (cách B), thay đổi cấu hình trong file *
 ko cần restart ứng dụng, mỗi lần lưu file, nestjs sẽ tự load cấu hình mới.
 
 
+<!-- ##################################################################################################### -->
+
+# cách cấu hình và thực hiện gửi mail trong nestjs
+https://notiz.dev/blog/send-emails-with-nestjs
+sau khi cài đặt gói nodemailer và các gói liên quan,
+có 2 cách để cấu hình nodemailer,
+1. tạo module riêng, cấu hình module, rồi import vào app.module.ts
+2. cấu hình trực tiếp trong phần import của app.module.ts
+
+## cách cấu hình 1:
+tạo Module [mail] như 1 module bình thường khác, và thêm code như bên dưới
+<!--
+import { Module } from '@nestjs/common';
+import { MailService } from './mail.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+
+@Module({
+  imports: [
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465, // Use 587 for TLS, 465 for SSL
+          secure: true, // Use 'true' if port is 465 (SSL), 'false' if port is 587 (TLS)
+          auth: {
+            user: config.get<string>('app.mailuser'), // Your Gmail address
+            pass: config.get<string>('app.mailpass'), // Your generated App Password
+          },
+        },
+        template: {
+          dir: process.cwd() + '/src/modules/mail/templates/', // đường dẫn đến file template. cwd()=current work directory
+          adapter: new HandlebarsAdapter(), // hoặc new PugAdapter(), hoặc new EjsAdapter()
+          options: {
+            strict: true,
+          },
+        },
+        defaults: {
+          from: '"No Reply" <no-reply@localhost>',
+        },
+        //preview: true,
+      }),
+    }),
+  ],
+  providers: [MailService],
+  exports: [MailService], // 👈 export for DI (Dependency Injection) to import at AppModule
+})
+export class MailModule {}
+-->
+sau khi tạo module [mail], trong file [app.module.ts], trong phần [import], thêm class [MailModule]
+
+## cách cấu hình 2:
+file [app.module.ts], trong phần [import], copy đoạn cấu hình của cách 1 [MailerModule.forRootAsync] và dán vào
+chú ý key [dir] trong đoạn code cấu hình, cần thay đổi cho phù hợp với vị trí hiện tại của file app.module.ts
+
+trong đó:
+[process.cwd()] trả về đường dẫn thư mục chứa file mà nodejs gọi chạy đầu tiên khi ứng dụng bắt đầu chạy,
+(hay trong nestjs là thư mục chứa file main.ts)
+[__dirname] trả về đường dẫn thư mục chứa file mà tập tin đang chạy nằm
+
+## cách thực hiện gửi mail
+tạo file mail.service.ts để viết service gửi mail, thêm code như bên dưới
+<!--
+import { Injectable } from '@nestjs/common';
+import { MailerService } from '@nestjs-modules/mailer';
+
+@Injectable()
+export class MailService {
+    constructor(
+        private readonly mailerService: MailerService
+    ) { }
+
+    async sendActivationEmail(to: string, name: string, code: string) {
+        // await // gửi mail bất đồng bộ, nên ko sử dụng await
+        this.mailerService.sendMail({
+            to: to,
+            subject: 'Activate your account 🔑',
+            template: 'register', // 👈 tên file template Handlebars (hoặc register.hbs)
+            context: {
+                name: name, // 👈 name: key trong template, dạng {{name}}
+                activationCode: code // 👈 activationCode: key trong template, dạng {{activationCode}}
+                expiredTime: expire // 👈 expiredTime: key trong template, dạng {{expiredTime}}
+            },
+        });
+    }
+}
+-->
+để gửi mail, ta tiến hành import service và gọi method của service như bình thường
+
+<!-- ##################################################################################################### -->
+
+# cấu hình file [nest-cli.json] (để copy file/folder khi build ứng dụng)
+mặc định, mỗi lần build ứng dụng,
+nestjs chỉ copy những file [.ts] hoặc [.d.ts],
+những loại file còn lại sẽ bị bỏ qua, vd template Handlebars
+để báo cho nestjs biết, ta cần copy những asset nào,
+ta sẽ phải định nghĩa những file/folder đó trong config của [compilerOptions] trong file [nest-cli.json]
+<!--
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true, // xóa & tạo lại thư mục [dist] mỗi lần rebuild để đảm bảo code là mới nhất
+    "assets": ["modules/mail/templates/**/*"], // 👈  or "**/*.hbs" all files ending with .hbs
+    "watchAssets": true // 🤖 copy mọi thứ bên trong [assets] vào thư mục [dist] ở chế độ watch
+  }
+}
+-->
 
 <!-- ##################################################################################################### -->
 
 # A Step-by-Step Guide to Implement JWT Authentication in NestJS using Passport
 https://medium.com/@camillefauchier/implementing-authentication-in-nestjs-using-passport-and-jwt-5a565aa521de
+
+
+
+<!-- ##################################################################################################### -->

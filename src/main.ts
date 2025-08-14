@@ -7,6 +7,9 @@ import { log } from 'node:console';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Set global prefix & exclude special path
+  // app.setGlobalPrefix('/api/v1', { exclude: ['', 'bhd'] });
+
   // Retrieve ConfigService instance
   const configService = app.get(ConfigService);
 

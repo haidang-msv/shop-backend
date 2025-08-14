@@ -63,13 +63,14 @@ export class UsersService {
     if(u != null) return null;
 
     const hashedPassword = await hashText(UserPass);
+    const expiredTime = 1, timeUnit = 'day';
     const usr = this.usersRepo.create({
       Email,
       UserCode,
       UserPass:hashedPassword,
       IsActive:false,
       ActiveCode:uuidv4(),
-      ExpiredCode:dayjs().add(1, 'year'),
+      ExpiredCode:dayjs().add(expiredTime, timeUnit),
     });
     
     // save new user
@@ -77,13 +78,14 @@ export class UsersService {
     const output = await this.usersRepo.save(usr);
     
     // send activation mail
-    this.mailService.sendActivationEmail(output.Email, output.Fullname, output.ActiveCode);
+    this.mailService.sendActivationEmail(output.Email, output.Fullname, output.ActiveCode, expiredTime + ' ' + timeUnit);
 
     // return result after create new user
     return {
       Email: output.Email,
       UserCode: output.UserCode,
       ActiveCode: output.ActiveCode,
+      Expired: output.ExpiredCode,
     };
   }
 
